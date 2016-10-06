@@ -1,0 +1,38 @@
+--Processing
+WITH ProcessedInput AS (
+    SELECT
+        CASE
+            WHEN LEN(id_thing) = 17 THEN CONCAT('90', id_thing)
+            WHEN LEN(id_thing) = 15 THEN CONCAT('8000', id_thing)
+            ELSE CONCAT('X', id_thing)
+        END AS id_thing,
+        System.TimeStamp AS datetime_event,
+        lat AS latitude,
+        long AS longitude
+    FROM
+        Labcom01in
+)
+
+--Output: xDR
+SELECT
+    PI.id_thing,
+    PI.datetime_event,
+    Ref.account,
+    PI.latitude,
+    PI.longitude
+INTO
+    xDRout
+FROM
+    ProcessedInput PI
+JOIN
+    Idthingrdin Ref
+ON
+    PI.id_thing = Ref.id_thing
+
+--Output: xDR2Logs
+SELECT
+    *
+INTO
+    xDR2Logsout
+FROM
+    ProcessedInput
